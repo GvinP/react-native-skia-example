@@ -8,11 +8,12 @@ export const PictureDimensions = rect(0, 0, width, height);
 
 interface PictureProps {
   image: SkImage;
+  matrix: SkiaValue<SkMatrix>;
 }
 
-export const Picture = ({ image }: PictureProps) => {
+export const Picture = ({ image, matrix }: PictureProps) => {
   return (
-    <Group>
+    <Group matrix={matrix}>
       <Image
         x={0}
         y={0}
