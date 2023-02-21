@@ -11,6 +11,8 @@
   "dependencies": {
     "@expo/webpack-config": "^0.17.2",
     "@shopify/react-native-skia": "0.1.157",
+    "@types/d3": "^7.4.0",
+    "d3": "^7.8.2",
     "expo": "~47.0.12",
     "expo-status-bar": "~1.4.2",
     "react": "18.1.0",
