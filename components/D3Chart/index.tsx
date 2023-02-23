@@ -15,6 +15,10 @@ import {
   useValue,
   vec,
   useTouchHandler,
+  interpolateColors,
+  Text as SkText,
+  useFont,
+  interpolate,
 } from "@shopify/react-native-skia";
 import { animatedData, DataPoint, originalData } from "./Data";
 import { curveBasis, line, scaleLinear } from "d3";
@@ -25,11 +29,13 @@ interface GraphData {
   max: number;
   curve: SkPath;
 }
-
 const GRAPH_HEIGHT = 400;
 const GRAPH_WIDTH = 400;
 
+const format = (value: number) => Math.round(value).toString();
+
 const D3Chart = () => {
+  const font = useFont(require("../../assets/Roboto-Medium.ttf"), 40);
   const isTransitionComplete = useValue(1);
   const transitionState = useValue({
     currentChart: 0,
@@ -37,11 +43,12 @@ const D3Chart = () => {
   });
   const x = useValue(0);
   const onTouch = useTouchHandler({
-    onStart: () => {},
     onActive: (pt) => {
       x.current = pt.x;
     },
-    onEnd: () => {},
+    onEnd: () => {
+      x.current = 0;
+    },
   });
 
   const makeGraph = (data: DataPoint[]): GraphData => {
@@ -84,7 +91,26 @@ const D3Chart = () => {
     () => [{ translateX: x.current }, { translateY: y.current }],
     [x, y]
   );
-
+  const color = useComputedValue(
+    () =>
+      interpolateColors(x.current, [0, GRAPH_WIDTH], ["#ff00ff", "#00ff00"]),
+    [x]
+  );
+  const text = useComputedValue(
+    () =>
+      format(
+        interpolate(
+          y.current,
+          [0, GRAPH_HEIGHT],
+          [
+            graphData[transitionState.current.currentChart].max,
+            graphData[transitionState.current.currentChart].min,
+          ]
+        )
+      ),
+    [y, transitionState]
+  );
+  if (!font) return null;
   return (
     <View style={styles.container}>
       <Canvas
@@ -101,6 +127,7 @@ const D3Chart = () => {
             color="lightgrey"
             strokeWidth={1}
           />
+          <SkText font={font} text={text} x={GRAPH_WIDTH / 2 - 50} y={50} />
           <Line
             p1={vec(10, 250)}
             p2={vec(400, 250)}
@@ -120,7 +147,7 @@ const D3Chart = () => {
               colors={["#ff00ff", "#00ff00"]}
             />
           </Path>
-          <Circle cx={0} cy={0} r={9} color="#ffa200" transform={transform} />
+          <Circle cx={0} cy={0} r={9} color={color} transform={transform} />
         </Group>
       </Canvas>
       <View style={styles.buttonContainer}>
