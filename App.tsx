@@ -1,13 +1,13 @@
 import { StatusBar } from "expo-status-bar";
 import { StyleSheet, View } from "react-native";
 import { GestureHandlerRootView } from "react-native-gesture-handler";
-import CircleChart from "./components/CircleChart";
+import Painting from "./components/Painting/Painting";
 
 export default function App() {
   return (
     <GestureHandlerRootView style={styles.container}>
       <View style={styles.container}>
-        <CircleChart />
+        <Painting />
         <StatusBar style="auto" />
       </View>
     </GestureHandlerRootView>
@@ -17,6 +17,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    marginTop: 100,
   },
 });
