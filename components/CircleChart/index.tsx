@@ -1,6 +1,6 @@
 import React, { useEffect } from "react";
 import { Dimensions, View, StyleSheet } from "react-native";
-import { Canvas, Path, Shadow } from "@shopify/react-native-skia";
+import { Canvas, Paint, Path, Shadow } from "@shopify/react-native-skia";
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -15,6 +15,7 @@ import {
   COLOR_4,
   COLOR_5,
   COLOR_9,
+  COLOR_BLACK,
   COLOR_WHITE,
 } from "./styles/colors";
 
@@ -151,13 +152,12 @@ const CircleChart = () => {
                     itemWidth + step * index,
                     4
                   )}
-                  color={
-                    index > subjectAreas.length - 5
-                      ? areas[area.title].color
-                      : COLOR_WHITE
-                  }
+                  color={areas[area.title].color}
+                  strokeWidth={4}
+                  style={index > subjectAreas.length - 5 ? "fill" : "stroke"}
                 >
-                  <Shadow dx={0} dy={0} blur={0.5} color="#000" />
+                  {index < subjectAreas.length - 4 && <Paint color={COLOR_WHITE} />}
+                  <Shadow dx={0} dy={0} blur={0.5} color={COLOR_BLACK} />
                 </Path>
               </Canvas>
             </Animated.View>
