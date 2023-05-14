@@ -61,6 +61,9 @@ interface StripeProps {
   stripeWidth: number;
   numberOfStripes: number;
   height: number;
+  amplitude: SkiaValue<number>;
+  currentIndex: SkiaValue<number>;
+  prevIndex: SkiaValue<number>;
 }
 
 export const Stripe = ({
@@ -69,15 +72,37 @@ export const Stripe = ({
   stripeWidth,
   numberOfStripes,
   height,
+  amplitude,
+  currentIndex,
+  prevIndex,
 }: StripeProps) => {
+  const f = useValue(1);
+  const noise = createNoise2D();
   const x = index * stripeWidth;
-  const rct = rect(x, 0, stripeWidth, height);
+  const rct = rect(x, 0, stripeWidth - 5, height);
   const { vertices, indices, textures } = generateTrianglePointsAndIndices(
     rct,
     20
   );
   const animatedVertices = useComputedValue(() => {
-    return vertices;
+    if (
+      currentIndex.current === index &&
+      currentIndex.current !== prevIndex.current
+    ) {
+      runTiming(f, 1.5, { duration: 250 }, () => {
+        runSpring(f, 1);
+      });
+    }
+    return vertices.map((vertex, index) => {
+      const A = 5;
+      const fx = 50;
+      const fy = 0.0005;
+      const d =
+        A *
+        amplitude.current *
+        noise((fx * index) / vertices.length, f.current * fy * clock.current);
+      return vec(vertex.x + d, vertex.y + d);
+    });
   }, [clock]);
   return (
     <>
@@ -86,7 +111,7 @@ export const Stripe = ({
         textures={textures}
         indices={indices}
       />
-      <Skeleton vertices={vertices} indices={indices} />
+      {/* <Skeleton vertices={vertices} indices={indices} /> */}
     </>
   );
 };
