@@ -19,14 +19,28 @@ const { width, height } = Dimensions.get("window");
 const rct = rect(0, 0, width, height);
 
 export const Puzzle1 = () => {
+  const path = useValue(Skia.Path.Make());
   const bg = useImage(require("./assets/bg.png"));
   const mask = useImage(require("./assets/mask.png"));
+  const onTouch = useTouchHandler({
+    onActive: (e) => {
+      path.current = Skia.Path.MakeFromOp(
+        path.current,
+        drawCircle(e),
+        PathOp.Union
+      )!;
+    },
+  });
   if (!bg || !mask) {
     return null;
   }
   return (
-    <Canvas style={{ width, height }}>
-      <Image image={bg} rect={rct} />
+    <Canvas style={{ width, height }} onTouch={onTouch}>
+      <Image image={bg} rect={rct} fit={"fill"} />
+      <Path path={path} color={"white"}>
+        <Shadow dx={0} dy={0} color={"rgba(0,0,0,0.5)"} blur={2} inner />
+      </Path>
+      <Image image={mask} rect={rct} fit={"fill"} />
     </Canvas>
   );
 };

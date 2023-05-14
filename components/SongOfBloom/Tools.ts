@@ -36,9 +36,23 @@ export const drawNoisyRect = (rct: SkRect) => {
 };
 
 export const drawCircle = (c: Vector) => {
-  const r = 30;
+  const noise = createNoise2D();
+  const points = 20;
+  const r = 20;
   const path = Skia.Path.Make();
-  path.addCircle(c.x, c.y, r);
+  for (let i = 0; i < points; i++) {
+    const t = i / points;
+    const theta = t * Math.PI * 2;
+    const point = vec(c.x + r * Math.cos(theta), c.y + r * Math.sin(theta));
+    const A = 15;
+    const F = 5;
+    const d = A * noise(F * t, 0);
+    if (i === 0) {
+      path.moveTo(point.x + d, point.y + d);
+    } else {
+      path.lineTo(point.x + d, point.y + d);
+    }
+  }
   return path;
 };
 
